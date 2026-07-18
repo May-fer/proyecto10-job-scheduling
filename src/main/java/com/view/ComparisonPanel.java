@@ -1,4 +1,4 @@
-package com.epn.proyecto10.view;
+package main.java.com.view;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
