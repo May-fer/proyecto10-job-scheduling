@@ -1,4 +1,4 @@
-package com.epn.proyecto10;
+package main.java.com;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

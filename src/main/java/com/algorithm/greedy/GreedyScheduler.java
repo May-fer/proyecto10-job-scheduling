@@ -1,8 +1,8 @@
-package com.algorithm.greedy;
+package main.java.com.algorithm.greedy;
 
-import com.algorithm.Scheduler;
-import com.model.Task;
-import com.model.Resultado;
+import main.java.com.algorithm.Scheduler;
+import main.java.com.modelo.Task;
+import main.java.com.modelo.Resultado;
 
 import java.*;
 

@@ -1,6 +1,4 @@
-
-
-package com.epn.proyecto10.model;
+package main.java.com.modelo;
 
 public class Task {
 
