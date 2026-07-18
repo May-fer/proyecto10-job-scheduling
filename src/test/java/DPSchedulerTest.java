@@ -1,4 +1,4 @@
-package test.java;
+package main.java.com.algorithm.dp;
 
 import main.java.com.modelo.Machine;
 import main.java.com.modelo.Resultado;
