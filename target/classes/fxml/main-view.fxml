@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml">
+
+    <top>
+        <VBox spacing="10" BorderPane.alignment="CENTER">
+
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="Planificador de Producción y Tareas"
+                   styleClass="titulo"/>
+
+            <HBox spacing="10">
+
+                <Button fx:id="btnCargarCSV"
+                        text="Cargar CSV"/>
+
+                <Button fx:id="btnAgregar"
+                        text="Agregar Tarea"/>
+
+                <Button fx:id="btnEjecutar"
+                        text="Ejecutar"/>
+
+                <Button fx:id="btnLimpiar"
+                        text="Limpiar"/>
+
+            </HBox>
+
+        </VBox>
+    </top>
+
+    <center>
+
+        <SplitPane dividerPositions="0.70">
+
+            <VBox fx:id="ganttContainer"
+                  spacing="10"
+                  prefWidth="700"/>
+
+            <VBox fx:id="comparisonContainer"
+                  spacing="10"
+                  prefWidth="300"/>
+
+        </SplitPane>
+
+    </center>
+
+</BorderPane>

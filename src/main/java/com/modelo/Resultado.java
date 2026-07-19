@@ -1,5 +1,5 @@
 
-package com.epn.proyecto10.model;
+package com.modelo;
 
 import java.util.List;
 

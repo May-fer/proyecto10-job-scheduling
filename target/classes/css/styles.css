@@ -1,0 +1,39 @@
+.root{
+    -fx-font-family: Arial;
+    -fx-background-color: white;
+}
+
+.titulo{
+
+    -fx-font-size:22px;
+    -fx-font-weight:bold;
+    -fx-text-fill:#1f4e79;
+
+}
+
+.button{
+
+    -fx-background-color:#1976d2;
+    -fx-text-fill:white;
+    -fx-font-size:13px;
+    -fx-background-radius:5;
+
+}
+
+.button:hover{
+
+    -fx-background-color:#1565c0;
+
+}
+
+.label{
+
+    -fx-font-size:13px;
+
+}
+
+.split-pane{
+
+    -fx-padding:10;
+
+}

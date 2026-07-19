@@ -1,7 +1,7 @@
-package com.epn.proyecto10.view;
+package com.view;
 
-import com.epn.proyecto10.model.Machine;
-import com.epn.proyecto10.model.Task;
+import com.modelo.Machine;
+import com.modelo.Task;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;

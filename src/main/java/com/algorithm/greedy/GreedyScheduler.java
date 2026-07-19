@@ -1,119 +1,138 @@
 package com.algorithm.greedy;
 
 import com.algorithm.Scheduler;
-import com.model.Task;
-import com.model.Resultado;
+import com.modelo.Machine;
+import com.modelo.Resultado;
+import com.modelo.Task;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-
+/**
+ * Heuristica Greedy para Weighted Interval Scheduling.
+ *
+ * Criterio elegido: ordenar las tareas por tiempo de FIN ascendente y
+ * aceptar cada tarea si es compatible (no se solapa) con la ultima
+ * tarea aceptada. Este es el mismo criterio de ordenamiento que usa
+ * DPScheduler, lo cual facilita comparar directamente ambas estrategias
+ * en el mismo caso de prueba.
+ *
+ * Importante: este algoritmo es rapido (O(n log n)) pero NO garantiza
+ * el valor optimo cuando los pesos de las tareas varian mucho (ver
+ * metodo ordenarPorRatioPeso y la documentacion al final de la clase
+ * para un caso concreto donde falla frente a DP).
+ */
 public class GreedyScheduler implements Scheduler {
 
-    // Contador de operaciones para benchmarking
-    private long operations = 0;
+    // Contador de comparaciones, mismo criterio que BinarySearchUtil:
+    // se incrementa cada vez que se evalua una condicion de decision.
+    private long comparaciones = 0;
 
     @Override
-    //Debe coincidir con el metodo de michael 
-    public Resultado schedule(List<Task> tasks) {
+    public String getNombre() {
+        return "Greedy (orden por fin)";
+    }
 
-        // Reiniciar contador de operaciones
-        operations = 0;
+    @Override
+    public Resultado planificar(List<Task> tareasOriginales) {
+        long inicioTiempo = System.nanoTime();
+        comparaciones = 0;
 
-        // ==========================================
-        // TODO 1:
-        // Crear una copia de la lista para no modificar
-        // la lista original recibida.
-        // ==========================================
-        List<Task> sortedTasks = new ArrayList<>(tasks);
+        // Copia para no modificar la lista original recibida.
+        List<Task> tareas = new ArrayList<>(tareasOriginales);
 
-        // ==========================================
-        // TODO 2:
-        // Elegir el criterio Greedy.
-        //
-        // Opción A:
-        // Ordenar por tiempo de finalización.
-        //
-        // Opción B:
-        // Ordenar por ratio peso/duración.
-        //
-        // Consultar con el grupo cuál utilizarán.
-        // ==========================================
-        sortedTasks.sort(Comparator.comparingInt(Task::getEnd));
+        int n = tareas.size();
+        Machine maquina = new Machine(0);
 
-        // Lista donde se guardarán las tareas elegidas
-        List<Task> selectedTasks = new ArrayList<>();
+        if (n == 0) {
+            long tiempoVacio = (System.nanoTime() - inicioTiempo) / 1_000_000;
+            List<Machine> maquinasVacias = new ArrayList<>();
+            maquinasVacias.add(maquina);
+            return new Resultado(maquinasVacias, 0, tiempoVacio, 0L);
+        }
 
-        // Beneficio total
-        int totalWeight = 0;
+        ordenarPorFinTemprana(tareas);
 
-        // Fin de la última tarea seleccionada
-        int lastFinish = -1;
+        int ultimoFin = -1;
+        int beneficioTotal = 0;
 
-        // ==========================================
-        // TODO 3:
-        // Recorrer todas las tareas.
-        // ==========================================
-        for (Task task : sortedTasks) {
+        for (Task tarea : tareas) {
+            comparaciones++;
 
-            // Contar operaciones
-            operations++;
+            // Compatible si empieza en o despues del fin de la ultima
+            // tarea aceptada.
+            if (tarea.getInicio() >= ultimoFin) {
+                tarea.setMaquina(maquina);
+                maquina.agregarTarea(tarea);
 
-            // ======================================
-            // TODO 4:
-            // Verificar que la tarea no se cruce
-            // con la última seleccionada.
-            //
-            // Si no hay conflicto:
-            //
-            // - Agregar la tarea.
-            // - Sumar el peso.
-            // - Actualizar lastFinish.
-            // ======================================
-            if (task.getStart() >= lastFinish) {
-
-                selectedTasks.add(task);
-
-                totalWeight += task.getWeight();
-
-                lastFinish = task.getEnd();
+                beneficioTotal += tarea.getPeso();
+                ultimoFin = tarea.getFin();
             }
         }
 
-        // ==========================================
-        // TODO 5:
-        // Crear el objeto Resultado.
-        // Dependerá de cómo Antony implemente esa clase.
-        // ==========================================
-        Resultado resultado = new Resultado();
+        long tiempoTotalMs = (System.nanoTime() - inicioTiempo) / 1_000_000;
 
-        // ==========================================
-        // TODO 6:
-        // Guardar dentro del Resultado:
-        //
-        // - tareas seleccionadas
-        // - beneficio total
-        // - número de operaciones (opcional)
-        //
-        // Ejemplo:
-        //
-        // resultado.setTasks(selectedTasks);
-        // resultado.setTotalWeight(totalWeight);
-        //
-        // Adaptar cuando exista Resultado.java
-        // ==========================================
+        List<Machine> maquinas = new ArrayList<>();
+        maquinas.add(maquina);
 
-        return resultado;
+        return new Resultado(maquinas, beneficioTotal, tiempoTotalMs, comparaciones);
     }
 
-    @Override
-    public long getOperations() {
-        return operations;
+    /**
+     * Ordena las tareas por tiempo de fin ascendente. Es el criterio
+     * que usa planificar() por defecto.
+     */
+    public void ordenarPorFinTemprana(List<Task> tareas) {
+        tareas.sort(Comparator.comparingInt(Task::getFin));
     }
 
-    @Override
-    public String getName() {
-        return "Greedy";
+    /**
+     * Criterio alternativo: ordenar por ratio peso/duracion descendente
+     * (mayor "densidad de valor" primero). Se deja disponible por si el
+     * equipo decide usar esta variante en vez de ordenar por fin;
+     * pueden intercambiar la llamada dentro de planificar().
+     *
+     * OJO: con este criterio el chequeo de compatibilidad ya no puede
+     * basarse solo en "ultimoFin" porque las tareas no quedan ordenadas
+     * en el tiempo; habria que revisar contra TODAS las tareas ya
+     * aceptadas. Se deja implementado el ordenamiento como referencia,
+     * pero el bucle de seleccion de planificar() esta pensado para
+     * ordenarPorFinTemprana().
+     */
+    public void ordenarPorRatioPeso(List<Task> tareas) {
+        tareas.sort(Comparator.comparingDouble(
+                (Task t) -> (double) t.getPeso() / Math.max(1, t.getDuracion())
+        ).reversed());
     }
+
+    public long getComparaciones() {
+        return comparaciones;
+    }
+
+    
+    
+    /*
+     * ============================================================
+     * CASO DOCUMENTADO donde Greedy (orden por fin) NO es optimo:
+     * ============================================================
+     * Tarea A: inicio=0,  fin=10, peso=100
+     * Tarea B: inicio=0,  fin=2,  peso=1
+     * Tarea C: inicio=2,  fin=10, peso=1
+     *
+     * Greedy ordena por fin: B(fin=2) -> C(fin=10) -> A(fin=10)
+     *   - Acepta B (peso 1), ultimoFin=2
+     *   - Acepta C (peso 1) porque inicio(2) >= ultimoFin(2), ultimoFin=10
+     *   - Rechaza A porque se solapa con C
+     *   Resultado Greedy = 1 + 1 = 2
+     *
+     * DP (DPScheduler) evalua ambas ramas y encuentra que quedarse solo
+     * con A da 100, que es mayor.
+     *   Resultado DP = 100
+     *
+     * Conclusion: Greedy por fin ignora el peso de las tareas, por lo
+     * que falla cuando hay una tarea de bajo "costo en tiempo" para
+     * las demas pero de muchisimo mayor peso que ellas combinadas.
+     * ============================================================
+     */
 }
