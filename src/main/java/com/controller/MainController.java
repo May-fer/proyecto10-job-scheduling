@@ -1,15 +1,17 @@
 package com.controller;
 
 import com.algorithm.Scheduler;
+import com.algorithm.branchbound.BranchAndBoundScheduler;
 import com.algorithm.dp.DPScheduler;
 import com.algorithm.dp.MultiMachineDP;
+import com.algorithm.greedy.GreedyScheduler;
 import com.modelo.Resultado;
 import com.modelo.Task;
-import com.modelo.Machine;
 import com.view.ComparisonPanel;
 import com.view.GanttChartView;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -27,11 +29,18 @@ public class MainController {
     @FXML private ComboBox<String> cmbEstrategia;   // Selector de algoritmo
     @FXML private Button btnEjecutar;               // Botón ejecutar
     @FXML private Button btnCargarCSV;              // Botón cargar CSV
+    @FXML private Button btnLimpiar;                // Botón limpiar
     @FXML private Label lblEstado;                  // Label de estado
 
-    // Componentes de la vista (inyectados por FXML o creados en initialize)
-    @FXML private ComparisonPanel comparisonPanel;   // Panel de comparación
-    @FXML private GanttChartView ganttChartView;     // Diagrama de Gantt
+    // Contenedores donde se insertan los componentes de vista personalizados
+    @FXML private VBox ganttContainer;
+    @FXML private VBox comparisonContainer;
+
+    // Componentes de la vista, creados en initialize() y agregados a los
+    // contenedores de arriba (no son inyectados directamente por FXML
+    // porque son componentes Java personalizados, no controles de FXML).
+    private ComparisonPanel comparisonPanel;
+    private GanttChartView ganttChartView;
 
     // Estado interno
     private List<Task> tareasActuales;
@@ -51,9 +60,16 @@ public class MainController {
         );
         cmbEstrategia.setValue("DP (Una máquina)");
 
+        //Crear e insertar los componentes de vista personalizados
+        comparisonPanel = new ComparisonPanel();
+        ganttChartView = new GanttChartView();
+        comparisonContainer.getChildren().add(comparisonPanel);
+        ganttContainer.getChildren().add(ganttChartView);
+
         //Configurar eventos
         btnEjecutar.setOnAction(e -> ejecutarAlgoritmo());
         btnCargarCSV.setOnAction(e -> cargarCSV());
+        btnLimpiar.setOnAction(e -> limpiar());
 
         //Cargar ejemplo por defecto
         cargarEjemplo();
@@ -72,6 +88,17 @@ public class MainController {
                         "5, 9, 12, 6"
         );
         txtNumMaquinas.setText("2");
+    }
+
+    // Limpiar entrada y resultados
+    private void limpiar() {
+        txtAreaTareas.clear();
+        txtNumMaquinas.setText("1");
+        tareasActuales = null;
+        resultadoDP = null;
+        resultadoGreedy = null;
+        resultadoBranchBound = null;
+        lblEstado.setText("Listo");
     }
 
     // Parsear tareas desde texto
@@ -187,24 +214,18 @@ public class MainController {
 
     // Ejecutar Greedy
     private Resultado ejecutarGreedy() {
-        // Scheduler scheduler = new GreedyScheduler();
-        // Resultado resultado = scheduler.planificar(tareasActuales);
-        // resultadoGreedy = resultado;
-        // return resultado;
-
-        lblEstado.setText("Greedy pendiente ");
-        return null;
+        Scheduler scheduler = new GreedyScheduler();
+        Resultado resultado = scheduler.planificar(tareasActuales);
+        resultadoGreedy = resultado;
+        return resultado;
     }
 
     // Ejecutar Branch & Bound
     private Resultado ejecutarBranchAndBound() {
-        // Scheduler scheduler = new BranchAndBoundScheduler();
-        // Resultado resultado = scheduler.planificar(tareasActuales);
-        // resultadoBranchBound = resultado;
-        // return resultado;
-
-        lblEstado.setText("Branch & Bound pendiente");
-        return null;
+        Scheduler scheduler = new BranchAndBoundScheduler();
+        Resultado resultado = scheduler.planificar(tareasActuales);
+        resultadoBranchBound = resultado;
+        return resultado;
     }
 
     // Actualizar la vista con resultados
