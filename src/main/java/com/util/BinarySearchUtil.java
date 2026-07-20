@@ -9,7 +9,6 @@ public class BinarySearchUtil {
     private static long comparaciones = 0;
 
     public static int buscarPredecesorCompatible(List<Task> tareas, int i) {
-        comparaciones = 0;
         if (i <= 0 || tareas == null || tareas.isEmpty()) {
             return -1;
         }
@@ -38,7 +37,6 @@ public class BinarySearchUtil {
     }
 
     public static int buscarPredecesorCompatible(long[] tiemposFin, int i) {
-        comparaciones = 0;
         if (i <= 0 || tiemposFin == null || tiemposFin.length == 0) {
             return -1;
         }
