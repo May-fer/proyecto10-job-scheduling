@@ -4,7 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.controller.MainController">
 
     <top>
         <VBox spacing="10" BorderPane.alignment="CENTER">
@@ -21,16 +22,25 @@
                 <Button fx:id="btnCargarCSV"
                         text="Cargar CSV"/>
 
-                <Button fx:id="btnAgregar"
-                        text="Agregar Tarea"/>
+                <Button fx:id="btnLimpiar"
+                        text="Limpiar"/>
+
+                <Label text="Máquinas:"/>
+                <TextField fx:id="txtNumMaquinas" prefWidth="60"/>
+
+                <Label text="Estrategia:"/>
+                <ComboBox fx:id="cmbEstrategia" prefWidth="220"/>
 
                 <Button fx:id="btnEjecutar"
                         text="Ejecutar"/>
 
-                <Button fx:id="btnLimpiar"
-                        text="Limpiar"/>
-
             </HBox>
+
+            <TextArea fx:id="txtAreaTareas"
+                      promptText="id, inicio, fin, peso (una tarea por línea)"
+                      prefRowCount="5"/>
+
+            <Label fx:id="lblEstado" text="Listo"/>
 
         </VBox>
     </top>
